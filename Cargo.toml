@@ -1,5 +1,5 @@
 [workspace]
-members = ["webstack"]
+members = ["webstack", "migration"]
 resolver = "2"
 
 # Defines a size-optimized profile for the WASM bundle in release mode
