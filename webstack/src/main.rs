@@ -2,11 +2,15 @@
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
+    use std::net::TcpListener;
+
     use axum::Router;
+    use axum_server::tls_rustls::RustlsConfig;
+    use clap::Parser;
     use leptos::logging::log;
     use leptos::prelude::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
-    use webstack::app::*;
+    use webstack::{app::*, server::utils::clap::Opt};
 
     let conf = get_configuration(None).unwrap();
     let addr = conf.leptos_options.site_addr;
@@ -22,11 +26,23 @@ async fn main() {
         .fallback(leptos_axum::file_and_error_handler(shell))
         .with_state(leptos_options);
 
-    // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
-    log!("listening on http://{}", &addr);
-    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    axum::serve(listener, app.into_make_service())
+
+    let opts = Opt::parse();
+
+    let listener = TcpListener::bind(&addr)
+        .unwrap();
+    
+    let config = RustlsConfig::from_pem_file(
+        opts.cert,
+        opts.key
+    )
+        .await
+        .unwrap();
+
+    log!("listening on https://{}", &addr);
+
+    axum_server::from_tcp_rustls(listener, config)
+        .serve(app.into_make_service())
         .await
         .unwrap();
 }

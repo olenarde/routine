@@ -9,3 +9,7 @@ Cargo.lock
 # IDEs
 .idea/
 .vscode/
+
+# TLS guard
+webstack/tls/cert.pem
+webstack/tls/key.pem
