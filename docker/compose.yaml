@@ -1,0 +1,31 @@
+name: ${NAME:-myapp}
+
+services:
+  # container 1 - database
+  database:
+    container_name: ${CONTAINER_NAME:-routine_database}
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-tasker}
+    healthcheck:
+      test: psql -U ${POSTGRES_USER:-postgres} -q -d ${POSTGRES_DB:-tasker} -c "SELECT 'ready';"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    ports:
+      - ${HOST_PORT:-5005}:${CONTAINER_PORT:-5432}
+    networks:
+      tasker_network:
+        ipv4_address: ${CONTAINER_IP:-172.32.16.10}
+
+networks:
+  tasker_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${CONTAINER_SUBNET:-172.32.16.0/24}
+          gateway: ${CONTAINER_GATEWAY:-172.32.16.1}
