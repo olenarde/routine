@@ -9,9 +9,9 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-tasker}
+      - POSTGRES_DB=${POSTGRES_DB:-routine}
     healthcheck:
-      test: psql -U ${POSTGRES_USER:-postgres} -q -d ${POSTGRES_DB:-tasker} -c "SELECT 'ready';"
+      test: psql -U ${POSTGRES_USER:-postgres} -q -d ${POSTGRES_DB:-routine} -c "SELECT 'ready';"
       interval: 10s
       timeout: 5s
       retries: 5
